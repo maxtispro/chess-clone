@@ -1,10 +1,18 @@
+from pprint import pprint
 import pygame
+from src.board import Board
 
 def run_chess():
+
+  # Initialize window
   pygame.init()
   screen = pygame.display.set_mode((600, 700))
   clock = pygame.time.Clock()
   running = True
+
+  # Initialize Chess Board
+  board = Board()
+  pprint(board._pieces)
 
   while running:
     for event in pygame.event.get():
