@@ -1,18 +1,20 @@
-from pprint import pprint
 import pygame
+from pygame.sprite import Group
+from src.piece import Color
 from src.board import Board
 
 def run_chess():
 
   # Initialize window
   pygame.init()
-  screen = pygame.display.set_mode((600, 700))
+  screen = pygame.display.set_mode((600, 600))
   clock = pygame.time.Clock()
   running = True
 
   # Initialize Chess Board
-  board = Board()
-  pprint(board._pieces)
+  board = Board(Color.WHITE, 600)
+  group = Group()
+  board.add(group)
 
   while running:
     for event in pygame.event.get():
@@ -20,6 +22,7 @@ def run_chess():
         running = False
     
     screen.fill('beige')
+    group.draw(screen)
     pygame.display.flip()
     clock.tick(60)
 

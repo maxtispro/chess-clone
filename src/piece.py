@@ -1,119 +1,38 @@
-from src.notation import Position, pos_2_code
-from enum import Enum
 from typing import override
+from pygame import Rect
+from src.notation import Position, code_2_pos, pos_2_code
+from enum import StrEnum, auto
+import pygame.image as image
+from pygame.sprite import Sprite
 
+class Color(StrEnum):
+  WHITE = auto()
+  BLACK = auto()
+  
+class Rank(StrEnum):
+  KING   = auto()
+  QUEEN  = auto()
+  ROOK   = auto()
+  BISHOP = auto()
+  KNIGHT = auto()
+  PAWN   = auto()
 
-Color = Enum('Color', ['WHITE', 'BLACK'])
+class Piece(Sprite):
 
-
-class Piece:
-  def __init__(self, color: int, position: Position):
-    assert(color == Color.WHITE or color == Color.BLACK)
+  @override
+  def __init__(self, piece_type: str, color: str, *groups):
+    super().__init__(*groups)
+    assert piece_type in Rank, f'invalid piece type {piece_type}'
+    assert color in Color, f'invalid color {color}'
+    self._type = piece_type
     self._color = color
-    self._position = (0, 0)
-    self.position = position
-    self._update_valid_pos()
-
-  def is_pos_on_board(self, pos: Position):
-    if len(pos) == 2 and 0 <= pos[0] < 8 and 0 <= pos[1] < 8:
-      return True
-    return False
+    self.image = image.load(f'assets/{self.type}_{self.color}.png').convert_alpha()
+    self.rect = self.image.get_rect()
   
   @property
-  def position(self):
-    return self._position
-  
-  @position.setter
-  def position(self, pos: Position):
-    if self.is_pos_on_board(pos):
-      self._position = pos
-    else:
-      print(f'Trying to set invalid position: {pos}')
+  def type(self):
+    return self._type
   
   @property
   def color(self):
     return self._color
-  
-  def _update_valid_pos(self):
-    '''Override this method in child classes'''
-    self.valid_positions: list[Position] = []
-  
-  def move(self, pos: Position):
-    if pos in self.valid_positions:
-      self.position = pos
-  
-  def __repr__(self) -> str:
-    return '{ color: ' + ('white' if self.color == Color.WHITE else 'black')\
-      + ', position: ' + pos_2_code(self.position) + ' }'
-
-
-class King(Piece):
-  @override
-  def _update_valid_pos(self):
-    self.valid_positions = [(i, j) for j in range(self.position[0]-1, self.position[0]+2)
-                 for i in range(self.position[1]-1, self.position[1]+2) if self.is_pos_on_board((i, j))]
-  
-  @override
-  def __repr__(self) -> str:
-    old = super().__repr__()
-    return old[:2] + 'King, ' + old[2:]
-
-
-class Queen(King):
-  @override
-  def _update_valid_pos(self):
-    super()._update_valid_pos()
-    for i in range(2, 8):
-      x = i + self.position[0]
-      y = i + self.position[1]
-      if self.is_pos_on_board((x, y)):
-        self.valid_positions.append((x, y))
-  
-  @override
-  def __repr__(self) -> str:
-    old = super().__repr__()
-    return old[:2] + 'Queen, ' + old[8:]
-
-
-class Bishop(Piece):
-  @override
-  def _update_valid_pos(self):
-    return super()._update_valid_pos()
-
-  @override
-  def __repr__(self) -> str:
-    old = super().__repr__()
-    return old[:2] + 'Bishop, ' + old[2:]
-
-
-class Knight(Piece):
-  @override
-  def _update_valid_pos(self):
-    return super()._update_valid_pos()
-  
-  @override
-  def __repr__(self) -> str:
-    old = super().__repr__()
-    return old[:2] + 'Knight, ' + old[2:]
-
-
-class Rook(Piece):
-  @override
-  def _update_valid_pos(self):
-    return super()._update_valid_pos()
-  
-  @override
-  def __repr__(self) -> str:
-    old = super().__repr__()
-    return old[:2] + 'Rook, ' + old[2:]
-
-
-class Pawn(Piece):
-  @override
-  def _update_valid_pos(self):
-    return super()._update_valid_pos()
-  
-  @override
-  def __repr__(self) -> str:
-    old = super().__repr__()
-    return old[:2] + 'Pawn, ' + old[2:]
