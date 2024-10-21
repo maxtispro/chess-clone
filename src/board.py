@@ -1,9 +1,6 @@
 from typing import override
 import pygame
-from src.notation import code_2_pos
 from src.piece import *
-import pygame.image as image
-from pygame.sprite import Sprite
 
 class Board(pygame.sprite.Sprite):
 
@@ -15,70 +12,79 @@ class Board(pygame.sprite.Sprite):
     self.sqaure_size = 128 * self.scale
     self.border_size = 40 * self.scale
     self.size = self.sqaure_size * 8 + self.border_size * 2
-    img = image.load(f'assets/board_{first}.png').convert()
+    img = pygame.image.load(f'assets/board_{first}.png').convert()
     self.image = pygame.transform.scale(img, (width, width))
     self.rect = self.image.get_rect()
     self.rect.x = 0
     self.rect.y = 0
 
-    self._pieces: list[tuple[Piece, str]] = [
+    self._grid: dict[str, Piece] = {}
 
-      # White pieces
-      (Piece(Rank.ROOK,   Color.WHITE, *groups), 'a1'),
-      (Piece(Rank.KNIGHT, Color.WHITE, *groups), 'b1'),
-      (Piece(Rank.BISHOP, Color.WHITE, *groups), 'c1'),
-      (Piece(Rank.QUEEN,  Color.WHITE, *groups), 'd1'),
-      (Piece(Rank.KING,   Color.WHITE, *groups), 'e1'),
-      (Piece(Rank.BISHOP, Color.WHITE, *groups), 'f1'),
-      (Piece(Rank.KNIGHT, Color.WHITE, *groups), 'g1'),
-      (Piece(Rank.ROOK,   Color.WHITE, *groups), 'h1'),
-      (Piece(Rank.PAWN,   Color.WHITE, *groups), 'a2'),
-      (Piece(Rank.PAWN,   Color.WHITE, *groups), 'b2'),
-      (Piece(Rank.PAWN,   Color.WHITE, *groups), 'c2'),
-      (Piece(Rank.PAWN,   Color.WHITE, *groups), 'd2'),
-      (Piece(Rank.PAWN,   Color.WHITE, *groups), 'e2'),
-      (Piece(Rank.PAWN,   Color.WHITE, *groups), 'f2'),
-      (Piece(Rank.PAWN,   Color.WHITE, *groups), 'g2'),
-      (Piece(Rank.PAWN,   Color.WHITE, *groups), 'h2'),
+    # White pieces
+    self.place(Rank.ROOK,   Color.WHITE, 'a1')
+    self.place(Rank.KNIGHT, Color.WHITE, 'b1')
+    self.place(Rank.BISHOP, Color.WHITE, 'c1')
+    self.place(Rank.QUEEN,  Color.WHITE, 'd1')
+    self.place(Rank.KING,   Color.WHITE, 'e1')
+    self.place(Rank.BISHOP, Color.WHITE, 'f1')
+    self.place(Rank.KNIGHT, Color.WHITE, 'g1')
+    self.place(Rank.ROOK,   Color.WHITE, 'h1')
+    self.place(Rank.PAWN,   Color.WHITE, 'a2')
+    self.place(Rank.PAWN,   Color.WHITE, 'b2')
+    self.place(Rank.PAWN,   Color.WHITE, 'c2')
+    self.place(Rank.PAWN,   Color.WHITE, 'd2')
+    self.place(Rank.PAWN,   Color.WHITE, 'e2')
+    self.place(Rank.PAWN,   Color.WHITE, 'f2')
+    self.place(Rank.PAWN,   Color.WHITE, 'g2')
+    self.place(Rank.PAWN,   Color.WHITE, 'h2')
 
-      # Black pieces
-      (Piece(Rank.ROOK,   Color.BLACK, *groups), 'a8'),
-      (Piece(Rank.KNIGHT, Color.BLACK, *groups), 'b8'),
-      (Piece(Rank.BISHOP, Color.BLACK, *groups), 'c8'),
-      (Piece(Rank.QUEEN,  Color.BLACK, *groups), 'd8'),
-      (Piece(Rank.KING,   Color.BLACK, *groups), 'e8'),
-      (Piece(Rank.BISHOP, Color.BLACK, *groups), 'f8'),
-      (Piece(Rank.KNIGHT, Color.BLACK, *groups), 'g8'),
-      (Piece(Rank.ROOK,   Color.BLACK, *groups), 'h8'),
-      (Piece(Rank.PAWN,   Color.BLACK, *groups), 'a7'),
-      (Piece(Rank.PAWN,   Color.BLACK, *groups), 'b7'),
-      (Piece(Rank.PAWN,   Color.BLACK, *groups), 'c7'),
-      (Piece(Rank.PAWN,   Color.BLACK, *groups), 'd7'),
-      (Piece(Rank.PAWN,   Color.BLACK, *groups), 'e7'),
-      (Piece(Rank.PAWN,   Color.BLACK, *groups), 'f7'),
-      (Piece(Rank.PAWN,   Color.BLACK, *groups), 'g7'),
-      (Piece(Rank.PAWN,   Color.BLACK, *groups), 'h7'),
-    ]
-
-    for piece, pos in self._pieces:
-      piece.image = pygame.transform.scale_by(piece.image, self.scale)
-      piece.rect = piece.image.get_rect()
-      self.move_piece(piece, pos)
+    # Black pieces
+    self.place(Rank.ROOK,   Color.BLACK, 'a8')
+    self.place(Rank.KNIGHT, Color.BLACK, 'b8')
+    self.place(Rank.BISHOP, Color.BLACK, 'c8')
+    self.place(Rank.QUEEN,  Color.BLACK, 'd8')
+    self.place(Rank.KING,   Color.BLACK, 'e8')
+    self.place(Rank.BISHOP, Color.BLACK, 'f8')
+    self.place(Rank.KNIGHT, Color.BLACK, 'g8')
+    self.place(Rank.ROOK,   Color.BLACK, 'h8')
+    self.place(Rank.PAWN,   Color.BLACK, 'a7')
+    self.place(Rank.PAWN,   Color.BLACK, 'b7')
+    self.place(Rank.PAWN,   Color.BLACK, 'c7')
+    self.place(Rank.PAWN,   Color.BLACK, 'd7')
+    self.place(Rank.PAWN,   Color.BLACK, 'e7')
+    self.place(Rank.PAWN,   Color.BLACK, 'f7')
+    self.place(Rank.PAWN,   Color.BLACK, 'g7')
+    self.place(Rank.PAWN,   Color.BLACK, 'h7')
   
-  def move_piece(self, piece: Piece, pos: str):
+  def _validate_pos(self, pos: str) -> str:
     pos = pos.lower()
     assert len(pos) == 2 and ord('a') <= ord(pos[0]) <= ord('h') and ord('1') <= ord(pos[1]) <= ord('8')
-    piece.rect.x = (ord(pos[0]) - ord('a')) * self.sqaure_size + self.border_size + (self.sqaure_size - piece.rect.width)/2
-    piece.rect.y = self.size - (ord(pos[1]) - ord('0')) * self.sqaure_size - self.border_size + (self.sqaure_size-piece.rect.height)/2
+    return pos
   
-  @override
-  def add(self, *groups):
-    super().add(*groups)
-    for piece, _ in self._pieces:
-      piece.add(*groups)
+  def _coords_on_board(self, pos: str) -> tuple[int, int]:
+    pos = self._validate_pos(pos)
+    x = (ord(pos[0]) - ord('a')) * self.sqaure_size + self.border_size
+    y = self.size - (ord(pos[1]) - ord('0')) * self.sqaure_size - self.border_size
+    return (x, y)
   
-  @override
-  def remove(self, *groups) -> None:
-    super().remove(*groups)
-    for piece, _ in self._pieces:
-      piece.remove(*groups)
+  def place(self, rank: str, color: str, pos: str):
+    pos = self._validate_pos(pos)
+    piece = Piece(rank, color, self.scale, *self.groups())
+    coords = self._coords_on_board(pos)
+    piece.rect.x = coords[0] + (self.sqaure_size - piece.rect.width)/2
+    piece.rect.y = coords[1] + (self.sqaure_size-piece.rect.height)/2
+    self._grid[pos] = piece
+  
+  def get(self, pos: str) -> Piece:
+    pos = self._validate_pos(pos)
+    return self._grid[pos]
+  
+  def move(self, piece: Piece, pos: str):
+    pos = self._validate_pos(pos)
+    coords = self._coords_on_board(pos)
+    piece.rect.x = coords[0] + (self.sqaure_size - piece.rect.width)/2
+    piece.rect.y = coords[1] + (self.sqaure_size-piece.rect.height)/2
+  
+  def capture(self, pos: str):
+    pos = self._validate_pos(pos)
+    self._grid[pos] = None

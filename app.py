@@ -12,9 +12,8 @@ def run_chess():
   running = True
 
   # Initialize Chess Board
-  board = Board(Color.WHITE, 600)
   group = Group()
-  board.add(group)
+  Board(Color.WHITE, 600, group)
 
   while running:
     for event in pygame.event.get():
