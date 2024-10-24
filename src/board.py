@@ -8,6 +8,7 @@ class Board(pygame.sprite.Sprite):
   def __init__(self, first: str, width = 1104, *groups):
     super().__init__(*groups)
     assert first in Color, 'invalid board starting color'
+    second = Color.BLACK if first == Color.WHITE else Color.WHITE
     self.scale = width / 1104
     self.sqaure_size = 128 * self.scale
     self.border_size = 40 * self.scale
@@ -20,41 +21,41 @@ class Board(pygame.sprite.Sprite):
 
     self._grid: dict[str, Piece] = {}
 
-    # White pieces
-    self.place(Rank.ROOK,   Color.WHITE, 'a1')
-    self.place(Rank.KNIGHT, Color.WHITE, 'b1')
-    self.place(Rank.BISHOP, Color.WHITE, 'c1')
-    self.place(Rank.QUEEN,  Color.WHITE, 'd1')
-    self.place(Rank.KING,   Color.WHITE, 'e1')
-    self.place(Rank.BISHOP, Color.WHITE, 'f1')
-    self.place(Rank.KNIGHT, Color.WHITE, 'g1')
-    self.place(Rank.ROOK,   Color.WHITE, 'h1')
-    self.place(Rank.PAWN,   Color.WHITE, 'a2')
-    self.place(Rank.PAWN,   Color.WHITE, 'b2')
-    self.place(Rank.PAWN,   Color.WHITE, 'c2')
-    self.place(Rank.PAWN,   Color.WHITE, 'd2')
-    self.place(Rank.PAWN,   Color.WHITE, 'e2')
-    self.place(Rank.PAWN,   Color.WHITE, 'f2')
-    self.place(Rank.PAWN,   Color.WHITE, 'g2')
-    self.place(Rank.PAWN,   Color.WHITE, 'h2')
+    # First pieces
+    self.place(Rank.ROOK,   first, 'a1')
+    self.place(Rank.KNIGHT, first, 'b1')
+    self.place(Rank.BISHOP, first, 'c1')
+    self.place(Rank.QUEEN,  first, 'd1' if first == Color.WHITE else 'e1')
+    self.place(Rank.KING,   first, 'e1' if first == Color.WHITE else 'd1')
+    self.place(Rank.BISHOP, first, 'f1')
+    self.place(Rank.KNIGHT, first, 'g1')
+    self.place(Rank.ROOK,   first, 'h1')
+    self.place(Rank.PAWN,   first, 'a2')
+    self.place(Rank.PAWN,   first, 'b2')
+    self.place(Rank.PAWN,   first, 'c2')
+    self.place(Rank.PAWN,   first, 'd2')
+    self.place(Rank.PAWN,   first, 'e2')
+    self.place(Rank.PAWN,   first, 'f2')
+    self.place(Rank.PAWN,   first, 'g2')
+    self.place(Rank.PAWN,   first, 'h2')
 
-    # Black pieces
-    self.place(Rank.ROOK,   Color.BLACK, 'a8')
-    self.place(Rank.KNIGHT, Color.BLACK, 'b8')
-    self.place(Rank.BISHOP, Color.BLACK, 'c8')
-    self.place(Rank.QUEEN,  Color.BLACK, 'd8')
-    self.place(Rank.KING,   Color.BLACK, 'e8')
-    self.place(Rank.BISHOP, Color.BLACK, 'f8')
-    self.place(Rank.KNIGHT, Color.BLACK, 'g8')
-    self.place(Rank.ROOK,   Color.BLACK, 'h8')
-    self.place(Rank.PAWN,   Color.BLACK, 'a7')
-    self.place(Rank.PAWN,   Color.BLACK, 'b7')
-    self.place(Rank.PAWN,   Color.BLACK, 'c7')
-    self.place(Rank.PAWN,   Color.BLACK, 'd7')
-    self.place(Rank.PAWN,   Color.BLACK, 'e7')
-    self.place(Rank.PAWN,   Color.BLACK, 'f7')
-    self.place(Rank.PAWN,   Color.BLACK, 'g7')
-    self.place(Rank.PAWN,   Color.BLACK, 'h7')
+    # Second pieces
+    self.place(Rank.ROOK,   second, 'a8')
+    self.place(Rank.KNIGHT, second, 'b8')
+    self.place(Rank.BISHOP, second, 'c8')
+    self.place(Rank.QUEEN,  second, 'd8' if second == Color.BLACK else 'e8')
+    self.place(Rank.KING,   second, 'e8' if second == Color.BLACK else 'd8')
+    self.place(Rank.BISHOP, second, 'f8')
+    self.place(Rank.KNIGHT, second, 'g8')
+    self.place(Rank.ROOK,   second, 'h8')
+    self.place(Rank.PAWN,   second, 'a7')
+    self.place(Rank.PAWN,   second, 'b7')
+    self.place(Rank.PAWN,   second, 'c7')
+    self.place(Rank.PAWN,   second, 'd7')
+    self.place(Rank.PAWN,   second, 'e7')
+    self.place(Rank.PAWN,   second, 'f7')
+    self.place(Rank.PAWN,   second, 'g7')
+    self.place(Rank.PAWN,   second, 'h7')
   
   def _validate_pos(self, pos: str) -> str:
     pos = pos.lower()
